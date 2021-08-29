@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="testHistorys">
+
+	<insert id="insertTestHistory" parameterType="com.toeic.speaking.vo.TestHistory">
+		insert into TOEIC_SPEAKING_TEST_HISTORY
+			(TEST_NO, TEST_STATUS, USER_ID, USER_ADDRESS, RECEIVE_TYPE, PAYMENT, TEST_REQUEST_DATE, CENTER_NO)
+		values
+			(#{testNo}, #{testStatus}, #{userId}, #{userAddress}, #{receiveType}, #{payment}, #{testRequestDate}, #{centerNo})
+	</insert>
+	
+	 <select id="getAllTestHistoryByUserId" parameterType="string" resultType="com.toeic.speaking.dto.mytest.TestHistoryDto">
+      select 
+         s.test_no testNo, 
+         s.test_name testName, 
+         s.test_time as testTime, s.test_date testDate, l.center_name centerName, h.test_status testStatus, h.test_request_date testRequestDate, h.center_no as centerNo
+      from toeic_speaking_test_history h, toeic_speaking_schedule s, toeic_speaking_location l
+      where s.test_no = h.test_no
+      and l.center_no = s.center_no
+      and h.user_id = #{value}
+      order by s.test_date
+   </select>
+
+	            
+	<select id="getTestHistoryByUserId" parameterType="string" resultType="com.toeic.speaking.dto.mytest.TestHistoryDto">
+      select 
+         *
+      from (select 
+         s.test_no testNo, 
+         s.test_name testName, 
+         s.test_time as testTime, s.test_date testDate, l.center_name centerName, h.test_status testStatus, h.test_request_date testRequestDate, h.center_no as centerNo
+         from toeic_speaking_test_history h, toeic_speaking_schedule s, toeic_speaking_location l
+         where s.test_no = h.test_no
+         and l.center_no = s.center_no
+         and h.user_id = #{value}
+         order by s.test_date desc)
+      where rownum &lt;= 3  
+   </select>
+	
+	<update id="deleteTestHistory" parameterType="com.toeic.speaking.dto.mytest.TestHistoryDto">
+      update toeic_speaking_test_history
+      
+      set 
+         test_status = 'N'
+      where test_no = #{testNo}   
+      and center_no = #{centerNo}
+   	</update>
+
+
+	<select id="getTotalRows" parameterType="map" resultType="int">
+	     select count(*)
+	     from toeic_speaking_test_history
+	     where user_id = #{userId}
+	</select>
+      
+	<select id="getMyTestLists" parameterType="map" resultType="com.toeic.speaking.dto.mytest.TestHistoryDto">
+	   select 
+	   test_no testNo, 
+	   test_name testName, 
+	   test_time as testTime, test_date testDate, center_name centerName, test_status testStatus, test_request_date testRequestDate
+	from (
+	      select row_number() over (order by s.test_no desc) rn,
+	              s.test_no, s.test_name, s.test_time, s.test_date, l.center_name , h.test_status , h.test_request_date
+	      from  toeic_speaking_test_history h, toeic_speaking_schedule s, toeic_speaking_location l
+	        where s.test_no = h.test_no
+	               and l.center_no = s.center_no
+	               and h.user_id = #{userId}
+	)
+	where rn between #{beginIndex} and #{endIndex}
+	</select>
+	
+	
+	<select id="getAllTestHistory" resultType="com.toeic.speaking.vo.TestHistory">
+		select
+			TEST_NO				as			testNo,
+			TEST_STATUS			as			testStatus,
+			USER_ID				as			userId,
+			TEST_SCORE			as			testScore,
+			TEST_SCORE2			as			testScore2,
+			TEST_SCORE3			as			testScore3,
+			USER_ADDRESS		as			userAddress,
+			RECEIVE_TYPE		as			receiveType,
+			PAYMENT				as			payment,
+			TEST_REQUEST_DATE	as			testRequestDate,
+			CENTER_NO			as			centerNo
+		from
+			TOEIC_SPEAKING_TEST_HISTORY
+	</select>
+
+
+	<select id="getAllTestHistoryByTestNo" parameterType="int" resultType="com.toeic.speaking.vo.TestHistory">
+		select
+			TEST_NO				as			testNo,
+			TEST_STATUS			as			testStatus,
+			USER_ID				as			userId,
+			TEST_SCORE			as			testScore,
+			TEST_SCORE2			as			testScore2,
+			TEST_SCORE3			as			testScore3,
+			USER_ADDRESS		as			userAddress,
+			RECEIVE_TYPE		as			receiveType,
+			PAYMENT				as			payment,
+			TEST_REQUEST_DATE	as			testRequestDate,
+			CENTER_NO			as			centerNo
+		from
+			TOEIC_SPEAKING_TEST_HISTORY
+		where
+			TEST_NO = #{value}
+	</select>
+	
+	<select id="getAllTestHistoryByCentertNo" parameterType="int" resultType="com.toeic.speaking.vo.TestHistory">
+		select
+			TEST_NO				as			testNo,
+			TEST_STATUS			as			testStatus,
+			USER_ID				as			userId,
+			TEST_SCORE			as			testScore,
+			TEST_SCORE2			as			testScore2,
+			TEST_SCORE3			as			testScore3,
+			USER_ADDRESS		as			userAddress,
+			RECEIVE_TYPE		as			receiveType,
+			PAYMENT				as			payment,
+			TEST_REQUEST_DATE	as			testRequestDate,
+			CENTER_NO			as			centerNo
+		from
+			TOEIC_SPEAKING_TEST_HISTORY
+		where
+			CENTER_NO = #{value}
+	</select>
+	
+	<update id="updateTestHistory" parameterType="com.toeic.speaking.vo.TestHistory">
+		update
+			TOEIC_SPEAKING_TEST_HISTORY
+		set
+			USER_ID				=			#{userId},
+			TEST_SCORE			=			#{testScore},
+			TEST_SCORE2			=			#{testScore2},
+			TEST_SCORE3			=			#{testScore3},
+			USER_ADDRESS		=			#{userAddress},
+			RECEIVE_TYPE		=			#{receiveType},
+			PAYMENT				=			#{payment},
+			TEST_REQUEST_DATE	=			#{testRequestDate},
+			CENTER_NO			=			#{centerNo}
+		where
+			TEST_NO = #{testNo}
+	</update>
+	
+	<select id="getTestHistoryByTestNo" parameterType="int" resultType="com.toeic.speaking.vo.TestHistory">
+		select
+			TEST_NO				as			testNo,
+			TEST_STATUS			as			testStatus,
+			USER_ID				as			userId,
+			TEST_SCORE			as			testScore,
+			TEST_SCORE2			as			testScore2,
+			TEST_SCORE3			as			testScore3,
+			USER_ADDRESS		as			userAddress,
+			RECEIVE_TYPE		as			receiveType,
+			PAYMENT				as			payment,
+			TEST_REQUEST_DATE	as			testRequestDate,
+			CENTER_NO			as			centerNo
+		from
+			TOEIC_SPEAKING_TEST_HISTORY
+		where
+			TEST_NO = #{value}
+		and test_status = 'Y'
+	</select>
+	
+	<select id="getTotalDtoByUserId" parameterType="string" resultType="com.toeic.speaking.vo.ScheduleHistory">
+		select
+			S.TEST_NO				as			testNo,
+			S.TEST_NAME				as			testName,
+			S.TEST_DATE				as			testDate,
+			S.CENTER_NO				as			centerNo,
+			S.TEST_TIME				as			testTime,
+			S.RECEIPT_DATE			as			receiptDate,
+			S.DEADLINE_DATE			as			deadLineDate,
+			S.EXPECTED_DATE			as			expectedDate,
+			S.ANNOUNCEMENT_DATE		as			announcementDate,
+			S.REGISTER_COUNT		as			registerCount,
+			S.QUOTA					as			quota,
+			S.TEST_STATUS			as			testStatus,
+			S.TEST_CREATED_DATE		as			testCreatedDate,
+			S.TEST_DELETED_DATE		as			deletedDate,
+			H.TEST_NO				as			HtestNo,
+			H.TEST_STATUS			as			HtestStatus,
+			H.USER_ID				as			userId,
+			H.TEST_SCORE			as			testScore,
+			H.TEST_SCORE2			as			testScore2,
+			H.TEST_SCORE3			as			testScore3,
+			H.USER_ADDRESS			as			userAddress,
+			H.RECEIVE_TYPE			as			receiveType,
+			H.PAYMENT				as			payment,
+			H.TEST_REQUEST_DATE		as			testRequestDate,
+			H.CENTER_NO				as			HcenterNo,
+			U.USER_ID				as			UuserId,
+			U.USER_NAME				as			userName,
+			U.USER_ENG_FIRSTNAME	as			firstName,
+			U.USER_ENG_LASTNAME		as			lastName,
+			U.USER_PWD				as			password,
+			U.USER_BIRTH			as			birth,
+			U.USER_EMAIL			as			email,
+			U.USER_PHONE			as			phone,
+			U.USER_ADMIN			as			admin,
+			U.USER_GENDER			as			gender,
+			U.USER_FILE_NAME		as			fileName,
+			U.USER_STATUS			as			status,
+			U.USER_CREATED_DATE		as			createdDate,
+			U.USER_DELETED_DATE		as			UdeletedDate,
+			L.CENTER_NO				as			LcenterNo,
+			L.CENTER_NAME			as			centerName,
+			L.CENTER_LOCATION		as			centerLocation,
+			L.QUOTA					as			Lquota,
+			L.CENTER_STATUS			as			centerStatus,
+			L.CENTER_CREATED_DATE	as			LcreatedDate,
+			L.CENTER_DELETED_DATE	as			LdeletedDate
+	from
+		TOEIC_SPEAKING_SCHEDULE S, TOEIC_SPEAKING_TEST_HISTORY H, TOEIC_SPEAKING_USERS U, TOEIC_SPEAKING_LOCATION L
+	where
+		S.TEST_NO = H.TEST_NO
+	and
+        U.USER_ID = H.USER_ID
+	and
+		S.CENTER_NO = L.CENTER_NO
+	and
+        U.USER_ID = #{value}
+	</select>
+	
+	<select id="getTotalDtoByTestNoWithUserId" parameterType="map" resultType="com.toeic.speaking.vo.ScheduleHistory">
+		select
+			S.TEST_NO				as			testNo,
+			S.TEST_NAME				as			testName,
+			S.TEST_DATE				as			testDate,
+			S.CENTER_NO				as			centerNo,
+			S.TEST_TIME				as			testTime,
+			S.RECEIPT_DATE			as			receiptDate,
+			S.DEADLINE_DATE			as			deadLineDate,
+			S.EXPECTED_DATE			as			expectedDate,
+			S.ANNOUNCEMENT_DATE		as			announcementDate,
+			S.REGISTER_COUNT		as			registerCount,
+			S.QUOTA					as			quota,
+			S.TEST_STATUS			as			testStatus,
+			S.TEST_CREATED_DATE		as			testCreatedDate,
+			S.TEST_DELETED_DATE		as			deletedDate,
+			H.TEST_NO				as			HtestNo,
+			H.TEST_STATUS			as			HtestStatus,
+			H.USER_ID				as			userId,
+			H.TEST_SCORE			as			testScore,
+			H.TEST_SCORE2			as			testScore2,
+			H.TEST_SCORE3			as			testScore3,
+			H.USER_ADDRESS			as			userAddress,
+			H.RECEIVE_TYPE			as			receiveType,
+			H.PAYMENT				as			payment,
+			H.TEST_REQUEST_DATE		as			testRequestDate,
+			H.CENTER_NO				as			HcenterNo,
+			U.USER_ID				as			UuserId,
+			U.USER_NAME				as			userName,
+			U.USER_ENG_FIRSTNAME	as			firstName,
+			U.USER_ENG_LASTNAME		as			lastName,
+			U.USER_PWD				as			password,
+			U.USER_BIRTH			as			birth,
+			U.USER_EMAIL			as			email,
+			U.USER_PHONE			as			phone,
+			U.USER_ADMIN			as			admin,
+			U.USER_GENDER			as			gender,
+			U.USER_FILE_NAME		as			fileName,
+			U.USER_STATUS			as			status,
+			U.USER_CREATED_DATE		as			createdDate,
+			U.USER_DELETED_DATE		as			UdeletedDate,
+			L.CENTER_NO				as			LcenterNo,
+			L.CENTER_NAME			as			centerName,
+			L.CENTER_LOCATION		as			centerLocation,
+			L.QUOTA					as			Lquota,
+			L.CENTER_STATUS			as			centerStatus,
+			L.CENTER_CREATED_DATE	as			LcreatedDate,
+			L.CENTER_DELETED_DATE	as			LdeletedDate
+	from
+		TOEIC_SPEAKING_SCHEDULE S, TOEIC_SPEAKING_TEST_HISTORY H, TOEIC_SPEAKING_USERS U, TOEIC_SPEAKING_LOCATION L
+	where
+		S.TEST_NO = H.TEST_NO
+	and
+        U.USER_ID = H.USER_ID
+	and
+		S.CENTER_NO = L.CENTER_NO
+	and
+		h.test_status = 'Y'
+	and
+        H.USER_ID = #{userId}
+    and
+    	H.TEST_NO = #{testNo}
+	</select>
+	
+	<select id="getAllDtoByTestNo" parameterType="int" resultType="com.toeic.speaking.vo.ScheduleHistory">
+		select
+			S.TEST_NO				as			testNo,
+			S.TEST_NAME				as			testName,
+			S.TEST_DATE				as			testDate,
+			S.CENTER_NO				as			centerNo,
+			S.TEST_TIME				as			testTime,
+			S.RECEIPT_DATE			as			receiptDate,
+			S.DEADLINE_DATE			as			deadLineDate,
+			S.EXPECTED_DATE			as			expectedDate,
+			S.ANNOUNCEMENT_DATE		as			announcementDate,
+			S.REGISTER_COUNT		as			registerCount,
+			S.QUOTA					as			quota,
+			S.TEST_STATUS			as			testStatus,
+			S.TEST_CREATED_DATE		as			testCreatedDate,
+			S.TEST_DELETED_DATE		as			deletedDate,
+			H.TEST_NO				as			HtestNo,
+			H.TEST_STATUS			as			HtestStatus,
+			H.USER_ID				as			userId,
+			H.TEST_SCORE			as			testScore,
+			H.TEST_SCORE2			as			testScore2,
+			H.TEST_SCORE3			as			testScore3,
+			H.USER_ADDRESS			as			userAddress,
+			H.RECEIVE_TYPE			as			receiveType,
+			H.PAYMENT				as			payment,
+			H.TEST_REQUEST_DATE		as			testRequestDate,
+			H.CENTER_NO				as			HcenterNo,
+			U.USER_ID				as			UuserId,
+			U.USER_NAME				as			userName,
+			U.USER_ENG_FIRSTNAME	as			firstName,
+			U.USER_ENG_LASTNAME		as			lastName,
+			U.USER_PWD				as			password,
+			U.USER_BIRTH			as			birth,
+			U.USER_EMAIL			as			email,
+			U.USER_PHONE			as			phone,
+			U.USER_ADMIN			as			admin,
+			U.USER_GENDER			as			gender,
+			U.USER_FILE_NAME		as			fileName,
+			U.USER_STATUS			as			status,
+			U.USER_CREATED_DATE		as			createdDate,
+			U.USER_DELETED_DATE		as			UdeletedDate,
+			L.CENTER_NO				as			LcenterNo,
+			L.CENTER_NAME			as			centerName,
+			L.CENTER_LOCATION		as			centerLocation,
+			L.QUOTA					as			Lquota,
+			L.CENTER_STATUS			as			centerStatus,
+			L.CENTER_CREATED_DATE	as			LcreatedDate,
+			L.CENTER_DELETED_DATE	as			LdeletedDate
+	from
+		TOEIC_SPEAKING_SCHEDULE S, TOEIC_SPEAKING_TEST_HISTORY H, TOEIC_SPEAKING_USERS U, TOEIC_SPEAKING_LOCATION L
+	where
+		S.TEST_NO = H.TEST_NO
+	and
+        U.USER_ID = H.USER_ID
+	and
+		S.CENTER_NO = L.CENTER_NO
+	and
+		S.CENTER_NO = #{value}
+		
+	</select>
+</mapper>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="schedules">
+
+	<select id="getScheduleBySubject" parameterType="string" resultType="com.toeic.speaking.vo.Schedule">
+		select 
+			distinct TEST_DATE 	as testDate,
+			DEADLINE_DATE 		as deadLineDate,
+			EXPECTED_DATE 		as expectedDate,
+			TEST_STATUS 		as testStatus
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		where
+			TEST_NAME = #{value}
+			and TEST_STATUS = 'Y' 
+			and test_date > to_char(sysdate, 'yyyy/mm/dd')
+            and test_date &lt; to_char(add_months(sysdate, 2), 'yyyy/mm/dd')
+        order by test_date
+	</select>
+
+	<select id="getOnlieReceptionSchedule" resultType="com.toeic.speaking.dto.reception.OnlieReceptionScheduleDto">
+		select 
+			distinct TEST_DATE 	as testDate,
+			DEADLINE_DATE 		as deadLineDate,
+			EXPECTED_DATE 		as expectedDate,
+			TEST_NAME 			as testName,
+			TEST_STATUS 		as testStatus
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		where
+			TEST_STATUS = 'Y' 
+			and test_date > to_char(sysdate, 'yyyy/mm/dd')
+        order by test_date
+	</select>
+	
+	<select id="getOnlieReceptionScheduleOnlyStatus" resultType="com.toeic.speaking.dto.reception.OnlieReceptionScheduleDto">
+		select 
+			distinct TEST_DATE 	as testDate,
+			DEADLINE_DATE 	as deadLineDate,
+			EXPECTED_DATE 	as expectedDate,
+			TEST_STATUS 	as testStatus
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		where TEST_STATUS = 'Y'
+			and test_date > to_char(sysdate, 'yyyy/mm/dd')
+		order by test_date
+	</select>
+	
+	<select id="getTestDateByNo" parameterType="int" resultType="com.toeic.speaking.dto.reception.OnlieReceptionScheduleDto">
+		select 
+			TEST_NO 		as testNo,
+			TEST_DATE 		as testDate,
+			DEADLINE_DATE 	as deadLineDate,
+			EXPECTED_DATE 	as expectedDate,
+			REGISTER_COUNT 	as registerCount,
+			TEST_STATUS 	as testStatus
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		where
+			TEST_NO = #{value}
+	</select>
+	
+	<update id="updateRegistCount" parameterType="com.toeic.speaking.dto.reception.OnlieReceptionScheduleDto">
+		update
+			TOEIC_SPEAKING_SCHEDULE
+		set
+			REGISTER_COUNT = #{registerCount},
+			TEST_STATUS = #{testStatus}
+		where
+			TEST_NO = #{testNo}
+	</update>
+	
+	<select id="getCardSchedule" parameterType="map" resultType="com.toeic.speaking.vo.Schedule">
+		select
+			TEST_DATE as testDate,
+			DEADLINE_DATE as deadLineDate,
+			ANNOUNCEMENT_DATE as announcementDate,
+			TEST_STATUS as testStatus
+		from
+			(select
+                TEST_DATE,
+                row_number() over (order by TEST_DATE) rn,
+				DEADLINE_DATE,
+				ANNOUNCEMENT_DATE,
+				TEST_STATUS
+			from
+				(select
+                distinct TEST_DATE,
+				DEADLINE_DATE,
+				ANNOUNCEMENT_DATE,
+				TEST_STATUS
+			from
+				TOEIC_SPEAKING_SCHEDULE)
+			where
+				TEST_DATE > to_char(sysdate, 'yyyy/mm/dd')
+			)
+		where
+			rn between #{beginIndex} and #{endIndex}
+        order by test_date
+	</select>
+	
+	<select id="getTotalRows" parameterType="map" resultType="int">
+		select
+			count(*)
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		where
+			TEST_DATE > to_char(sysdate, 'yyyy/mm/dd')
+	</select>
+	
+	
+	<insert id="insertNewSchedule" parameterType="com.toeic.speaking.vo.Schedule">
+	insert into toeic_speaking_schedule
+		(
+		TEST_NO,
+		test_date,
+		TEST_NAME,
+		CENTER_NO,
+		TEST_TIME,
+		RECEIPT_DATE,
+		DEADLINE_DATE,
+		EXPECTED_DATE,
+		test_status,
+		ANNOUNCEMENT_DATE
+		)
+	values
+	(	
+	test_seq.nextval,
+	#{testDate},
+	#{testName},
+	#{centerNo},
+	#{testTime},
+	#{receiptDate},
+	#{deadLineDate},
+	#{expectedDate},
+	#{testStatus},
+	#{announcementDate})
+	</insert>
+	
+	<select id="getAllSchedules" resultType="com.toeic.speaking.vo.Schedule">
+		select
+			TEST_NO				as		testNo,
+			TEST_NAME			as		testName,
+			TEST_DATE			as		testDate,
+			CENTER_NO			as		centerNo,
+			TEST_TIME			as		testTime,
+			RECEIPT_DATE		as		receiptDate,
+			DEADLINE_DATE		as		deadLineDate,
+			EXPECTED_DATE		as		expectedDate,
+			ANNOUNCEMENT_DATE	as		announcementDate,
+			REGISTER_COUNT		as		registerCount,
+			QUOTA				as		quota,
+			TEST_STATUS			as		testStatus,
+			TEST_CREATED_DATE	as		testCreatedDate,
+			TEST_DELETED_DATE	as		deletedDate
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		order by test_date asc
+	</select>
+	
+	<select id="getScheduleByTestNo" parameterType="int" resultType="com.toeic.speaking.vo.Schedule">
+		select
+				TEST_NO				as		testNo,
+				TEST_NAME			as		testName,
+				TEST_DATE			as		testDate,
+				CENTER_NO			as		centerNo,
+				TEST_TIME			as		testTime,
+				RECEIPT_DATE		as		receiptDate,
+				DEADLINE_DATE		as		deadLineDate,
+				EXPECTED_DATE		as		expectedDate,
+				ANNOUNCEMENT_DATE	as		announcementDate,
+				REGISTER_COUNT		as		registerCount,
+				QUOTA				as		quota,
+				TEST_STATUS			as		testStatus,
+				TEST_CREATED_DATE	as		testCreatedDate,
+				TEST_DELETED_DATE	as		deletedDate
+			from
+				TOEIC_SPEAKING_SCHEDULE
+			where
+				TEST_NO = #{value}
+	</select>
+	
+	<select id="getScheduleByDate" parameterType="string" resultType="com.toeic.speaking.vo.Schedule">
+		select
+			TEST_NO				as		testNo,
+			TEST_NAME			as		testName,
+			TEST_DATE			as		testDate,
+			CENTER_NO			as		centerNo,
+			TEST_TIME			as		testTime,
+			RECEIPT_DATE		as		receiptDate,
+			DEADLINE_DATE		as		deadLineDate,
+			EXPECTED_DATE		as		expectedDate,
+			ANNOUNCEMENT_DATE	as		announcementDate,
+			REGISTER_COUNT		as		registerCount,
+			QUOTA				as		quota,
+			TEST_STATUS			as		testStatus,
+			TEST_CREATED_DATE	as		testCreatedDate,
+			TEST_DELETED_DATE	as		deletedDate
+		from
+			TOEIC_SPEAKING_SCHEDULE
+		where
+			TEST_DATE = to_date(#{value},'yyyy-mm-dd')
+	</select>
+	
+	<select id="getSchedulesByTestName" parameterType="string" resultType="com.toeic.speaking.vo.Schedule">
+	select
+		TEST_DATE			as		testDate,
+		TEST_NAME			as		testName,
+		TEST_TIME			as		testTime,
+		RECEIPT_DATE		as		receiptDate,
+		DEADLINE_DATE		as		deadLineDate,
+		EXPECTED_DATE		as		expectedDate,
+		ANNOUNCEMENT_DATE	as		announcementDate,
+		REGISTER_COUNT		as		registerCount,
+		QUOTA				as		quota,
+		TEST_STATUS			as		testStatus,
+		TEST_CREATED_DATE	as		testCreatedDate,
+		TEST_DELETED_DATE	as		deletedDate
+	from
+		(select
+			distinct TEST_DATE,
+			TEST_NAME			,
+			TEST_TIME			,
+			RECEIPT_DATE		,
+			DEADLINE_DATE		,
+			EXPECTED_DATE		,
+			ANNOUNCEMENT_DATE	,
+			REGISTER_COUNT		,
+			QUOTA				,
+			TEST_STATUS			,
+			TEST_CREATED_DATE	,
+			TEST_DELETED_DATE
+		from
+			TOEIC_SPEAKING_SCHEDULE
+			)
+	where
+		TEST_NAME = #{value}
+	order by test_date asc
+	</select>
+	
+	<select id="getTestNames" resultType="com.toeic.speaking.vo.Schedule">
+	select
+		distinct(test_name) as testName
+	from 
+		toeic_speaking_schedule
+	</select>
+	
+	<update id="updateSchedule" parameterType="com.toeic.speaking.vo.Schedule">
+		update TOEIC_SPEAKING_SCHEDULE
+			set
+				TEST_NAME			=		#{testName},
+				TEST_DATE			=		#{testDate},
+				CENTER_NO			=		#{centerNo},
+				TEST_TIME			=		#{testTime},
+				RECEIPT_DATE		=		#{receiptDate},
+				DEADLINE_DATE		=		#{deadLineDate},
+				EXPECTED_DATE		=		#{expectedDate},
+				ANNOUNCEMENT_DATE	=		#{announcementDate},
+				REGISTER_COUNT		=		#{registerCount},
+				QUOTA				=		#{quota},
+				TEST_STATUS			=		#{testStatus},
+				TEST_DELETED_DATE	=		#{deletedDate}
+			where
+				TEST_NO = #{testNo}
+	</update>
+	
+	<select id="scheduleLocationDto" resultType="com.toeic.speaking.vo.ScheduleLocation">
+		select 
+		    S.test_no					as testNo,
+		    S.test_name					as testName,
+		    S.test_date					as testDate,
+		    S.center_no					as centerNo,
+		    S.test_time					as testTime,
+		    S.receipt_date				as receiptDate,
+		    S.deadline_date				as deadLineDate,
+		    S.expected_date				as expectedDate,
+		    S.announcement_date			as announcementDate,
+		    S.register_count			as registerCount,
+		    S.test_deleted_date			as deletedDate,
+		    S.quota						as quota,
+		    S.test_status				as testStatus,
+		    S.TEST_CREATED_DATE			as testCreatedDate,
+		    L.center_no					as LcenterNo,
+		    L.center_name				as centerName,
+		    L.center_location			as centerLocation,
+		    L.quota						as Lquota,
+		    L.center_status				as centerStatus,
+		    L.CENTER_CREATED_DATE		as centerCreatedDate,
+		    L.CENTER_DELETED_DATE		as centerDeletedDate
+		from
+		    toeic_speaking_schedule S, toeic_speaking_location L
+		where
+		    S.center_no = L.center_no
+	    order by testDate asc
+	</select>
+	
+	<delete id="deleteScheduleByNo" parameterType="int">
+		delete from TOEIC_SPEAKING_SCHEDULE
+		where test_no = #{value}
+	</delete>
+	
+	<select id="getAllschedulesforPaging" parameterType="map" resultType="com.toeic.speaking.vo.Schedule">
+		select
+			TEST_NO				as		testNo,
+			TEST_NAME			as		testName,
+			TEST_DATE			as		testDate,
+			CENTER_NO			as		centerNo,
+			TEST_TIME			as		testTime,
+			RECEIPT_DATE		as		receiptDate,
+			DEADLINE_DATE		as		deadLineDate,
+			EXPECTED_DATE		as		expectedDate,
+			ANNOUNCEMENT_DATE	as		announcementDate,
+			REGISTER_COUNT		as		registerCount,
+			QUOTA				as		quota,
+			TEST_STATUS			as		testStatus,
+			TEST_CREATED_DATE	as		testCreatedDate,
+			TEST_DELETED_DATE	as		deletedDate
+		from
+			(select row_number() over (order by test_no asc) row_no, A.*
+        	from toeic_speaking_schedule A)
+        where
+        	row_no between #{beginIndex} and #{endIndex}
+        order by test_no asc
+	</select>
+	
+	<select id="getRowCount" parameterType = "map" resultType="int">
+		select
+			count(*)
+		from
+			toeic_speaking_schedule
+		where
+			test_status = 'N'
+	</select>
+	
+	<select id="getdtoByCetnerName" parameterType="string" resultType="com.toeic.speaking.vo.ScheduleLocation">
+		select 
+			    S.test_no					as testNo,
+			    S.test_name					as testName,
+			    S.test_date					as testDate,
+			    S.center_no					as centerNo,
+			    S.test_time					as testTime,
+			    S.receipt_date				as receiptDate,
+			    S.deadline_date				as deadLineDate,
+			    S.expected_date				as expectedDate,
+			    S.announcement_date			as announcementDate,
+			    S.register_count			as registerCount,
+			    S.test_deleted_date			as deletedDate,
+			    S.quota						as quota,
+			    S.test_status				as testStatus,
+			    S.TEST_CREATED_DATE			as testCreatedDate,
+			    L.center_no					as LcenterNo,
+			    L.center_name				as centerName,
+			    L.center_location			as centerLocation,
+			    L.quota						as Lquota,
+			    L.center_status				as centerStatus,
+			    L.CENTER_CREATED_DATE		as centerCreatedDate,
+			    L.CENTER_DELETED_DATE		as centerDeletedDate
+			from
+			    toeic_speaking_schedule S, toeic_speaking_location L
+			where
+			    S.center_no = L.center_no
+		    and
+		    	L.center_name = #{value}
+		    order by testDate asc
+    </select>
+    
+    <select id="getDtoByTestNo" parameterType="int" resultType="com.toeic.speaking.vo.ScheduleLocation">
+		select 
+			    S.test_no					as testNo,
+			    S.test_name					as testName,
+			    S.test_date					as testDate,
+			    S.center_no					as centerNo,
+			    S.test_time					as testTime,
+			    S.receipt_date				as receiptDate,
+			    S.deadline_date				as deadLineDate,
+			    S.expected_date				as expectedDate,
+			    S.announcement_date			as announcementDate,
+			    S.register_count			as registerCount,
+			    S.test_deleted_date			as deletedDate,
+			    S.quota						as quota,
+			    S.test_status				as testStatus,
+			    S.TEST_CREATED_DATE			as testCreatedDate,
+			    L.center_no					as LcenterNo,
+			    L.center_name				as centerName,
+			    L.center_location			as centerLocation,
+			    L.quota						as Lquota,
+			    L.center_status				as centerStatus,
+			    L.CENTER_CREATED_DATE		as centerCreatedDate,
+			    L.CENTER_DELETED_DATE		as centerDeletedDate
+			from
+			    toeic_speaking_schedule S, toeic_speaking_location L
+			where
+			    S.center_no = L.center_no
+		    and
+		    	S.test_no = #{value}
+    </select>
+    
+    <select id="getSpeakingTestCount" resultType="int">
+    	select
+    		count(*)
+    	from
+    		toeic_speaking_schedule
+   		where
+   			test_name = 'Speaking Test'
+    </select>
+    
+    <select id="getWritingTestCount" resultType="int">
+    	select
+    		count(*)
+    	from
+    		toeic_speaking_schedule
+   		where
+   			test_name = 'WritingTest'
+    </select>
+    
+    <select id="getSpeakingWritingTestCount" resultType="int">
+    	select
+    		count(*)
+    	from
+    		toeic_speaking_schedule
+   		where
+   			test_name = 'SpeakingWritingTest'
+    </select>
+</mapper>

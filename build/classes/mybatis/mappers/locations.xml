@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="locations">
+	<select id="getCenterLocationCnt" resultType="com.toeic.speaking.dto.reception.CenterCountDto">
+		select 
+			center_location as centerLocation, 
+			count(*) as cnt
+		from 
+			toeic_speaking_location
+		where 
+			center_location is not null
+		group by 
+			center_location
+	</select>
+	
+	<select id="getAllLocations" resultType="com.toeic.speaking.vo.Location">
+		select
+			CENTER_NO as centerNo,
+			CENTER_NAME as centerName,
+			CENTER_LOCATION as centerLocation,
+			QUOTA,
+			CENTER_STATUS as centerStatus,
+			CENTER_CREATED_DATE	as	createdDate,
+			CENTER_DELETED_DATE	as	deletedDate
+		from
+			toeic_speaking_location
+	</select>
+	
+	<select id="getCenterInfoByLocation" parameterType="map" resultType="com.toeic.speaking.dto.reception.TestReceptionCenterInfoByLocationDto">
+	select 
+		l.center_no as centerNo, l.center_name as centerName, l.center_status as centerStatus, s.register_count as registerCount, s.quota, s.test_no as testNo, s.test_status as testStatus
+	from 
+		TOEIC_SPEAKING_LOCATION l, TOEIC_SPEAKING_SCHEDULE s
+	where 
+		l.center_no = s.center_no
+		and l.center_location = #{centerLocation}
+		and s.test_date = #{testDate}
+	</select>
+	
+	<insert id="insertNewCenter" parameterType="com.toeic.speaking.vo.Location">
+		insert into TOEIC_SPEAKING_LOCATION
+		(
+			CENTER_NO,
+			CENTER_NAME,
+			CENTER_LOCATION,
+			QUOTA
+		)
+		values
+		(
+			center_seq.nextval,
+			#{centerName},
+			#{centerLocation},
+			#{quota}
+		)
+	</insert>
+	
+	<update id="updateCenter" parameterType="com.toeic.speaking.vo.Location">
+		update TOEIC_SPEAKING_LOCATION
+			set
+				CENTER_NAME				=			#{centerName},
+				CENTER_LOCATION			=			#{centerLocation},
+				QUOTA					=			#{quota},
+				CENTER_STATUS			=			#{centerStatus},
+				CENTER_DELETED_DATE		=			#{deletedDate}
+			where
+				CENTER_NO	=	#{centerNo}
+	</update>
+	
+	<delete id="deleteCenter" parameterType="int">
+		delete
+			from toeic_speaking_location
+		where
+			center_no = #{value}
+	</delete>
+	
+	<select id="getAllLocationsName" resultType="com.toeic.speaking.vo.Location">
+		select
+			distinct(CENTER_LOCATION)			as	centerLocation
+		from
+			TOEIC_SPEAKING_LOCATION
+	</select>
+	
+	<select id="getLocationByCityName" parameterType="string" resultType="com.toeic.speaking.vo.Location">
+		select
+			CENTER_NO			as	centerNo,
+			CENTER_NAME			as	centerName,
+			CENTER_LOCATION		as	centerLocation,
+			QUOTA				as	quota,
+			CENTER_STATUS		as	centerStatus,
+			CENTER_CREATED_DATE	as	createdDate,
+			CENTER_DELETED_DATE	as	deletedDate
+		from
+			TOEIC_SPEAKING_LOCATION
+		where
+			CENTER_LOCATION = #{value}
+	</select>
+	
+	<select id="getLocationByCenerNo" parameterType="int" resultType="com.toeic.speaking.vo.Location">
+		select
+				CENTER_NO			as	centerNo,
+				CENTER_NAME			as	centerName,
+				CENTER_LOCATION		as	centerLocation,
+				QUOTA				as	quota,
+				CENTER_STATUS		as	centerStatus,
+				CENTER_CREATED_DATE	as	createdDate,
+				CENTER_DELETED_DATE	as	deletedDate
+			from
+				TOEIC_SPEAKING_LOCATION
+			where
+				CENTER_NO = #{value}
+	</select>
+	
+	<select id="getDtoByCenterLocation" parameterType="string" resultType="com.toeic.speaking.vo.ScheduleLocation">
+		select 
+		    S.test_no					as testNo,
+		    S.test_name					as testName,
+		    S.test_date					as testDate,
+		    S.center_no					as centerNo,
+		    S.test_time					as testTime,
+		    S.receipt_date				as receiptDate,
+		    S.deadline_date				as deadLineDate,
+		    S.expected_date				as expectedDate,
+		    S.announcement_date			as announcementDate,
+		    S.register_count			as registerCount,
+		    S.quota						as quota,
+		    S.test_status				as testStatus,
+		    S.TEST_CREATED_DATE			as testCreatedDate,
+		    S.TEST_DELETED_DATE			as testDeletedDate,
+		    L.center_no					as LcenterNo,
+		    L.center_name				as centerName,
+		    L.center_location			as centerLocation,
+		    L.quota						as Lquota,
+		    L.center_status				as centerStatus,
+		    L.CENTER_CREATED_DATE		as centerCreatedDate,
+		    L.CENTER_DELETED_DATE		as centerDeletedDate
+		from
+		    toeic_speaking_schedule S, toeic_speaking_location L
+		where
+		    L.center_location = #{value}
+	    and
+		    S.center_no = L.center_no
+	    order by testDate asc
+	</select>
+	
+	<select id="getLocationByCenerName" parameterType="string" resultType="com.toeic.speaking.vo.Location">
+		select
+				CENTER_NO			as	centerNo,
+				CENTER_NAME			as	centerName,
+				CENTER_LOCATION		as	centerLocation,
+				QUOTA				as	quota,
+				CENTER_STATUS		as	centerStatus,
+				CENTER_CREATED_DATE	as	createdDate,
+				CENTER_DELETED_DATE	as	deletedDate
+			from
+				TOEIC_SPEAKING_LOCATION
+			where
+				CENTER_NAME = #{value}
+	</select>
+	
+	<select id="getLocationByTestName" parameterType="int" resultType="com.toeic.speaking.vo.Location">
+		select
+				CENTER_NO			as	centerNo,
+				CENTER_NAME			as	centerName,
+				CENTER_LOCATION		as	centerLocation,
+				QUOTA				as	quota,
+				CENTER_STATUS		as	centerStatus,
+				CENTER_CREATED_DATE	as	createdDate,
+				CENTER_DELETED_DATE	as	deletedDate
+			from
+				TOEIC_SPEAKING_LOCATION
+			where
+				CENTER_NO = #{value}
+	</select>
+	
+</mapper>

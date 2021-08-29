@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="users">
+
+	<insert id="insertUser" parameterType="com.toeic.speaking.vo.User">
+		insert into TOEIC_SPEAKING_USERS
+			(user_id, 
+			user_name, 
+			user_pwd, 
+			user_birth,
+			user_email, 
+			user_phone, 
+			user_admin
+			)
+		values
+			(
+			#{userId},
+			#{userName},
+			#{password},
+			#{birth},
+			#{email},
+			#{phone},
+			#{admin}
+			)
+	</insert>
+
+	<update id="updateLoginUser" parameterType="com.toeic.speaking.vo.User">
+		update 
+			TOEIC_SPEAKING_USERS
+		set 
+			USER_ENG_FIRSTNAME = #{firstName},
+			USER_ENG_LASTNAME = #{lastName},
+			USER_GENDER = #{gender},
+			USER_FILE_NAME = #{fileName} 
+        where
+            user_id = #{userId}
+	</update>
+	
+	<select id="getUserById" parameterType="string" resultType="com.toeic.speaking.vo.User" >
+	
+		select 
+				user_id as userId,
+				user_name as userName,
+				USER_ENG_FIRSTNAME as firstName,
+				USER_ENG_LASTNAME as lastName,
+				USER_GENDER as gender,
+				user_pwd as password, 
+				user_email as email, 
+				user_phone as phone, 
+				user_admin as admin, 
+				user_file_name as fileName, 
+				user_status as status,
+				user_deleted_date as deletedDate, 
+				user_birth birth
+		from toeic_speaking_users
+		where user_id = #{value}
+	
+	</select>
+	
+	<select id="getUserByPhone" parameterType="string" resultType="com.toeic.speaking.vo.User" >
+	
+		select user_id as userId, user_name as userName, user_pwd as password, user_email as email, 
+				user_phone as phone, user_admin as admin, user_file_name as fileName, user_status as status,
+				user_deleted_date as deletedDate, user_birth birth
+		from toeic_speaking_users
+		where user_phone = #{value}
+	
+	</select>
+	
+	<update id="updateUser" parameterType="com.toeic.speaking.vo.User">
+	
+		update toeic_speaking_users
+		
+		set
+			user_pwd = #{password},
+			user_email = #{email},
+			user_phone = #{phone}
+		
+		where user_id = #{userId}	
+	
+	</update>
+	
+	<delete id="deleteUser" parameterType="com.toeic.speaking.vo.User">
+		update 
+			toeic_speaking_users
+		set
+			user_status = #{status},
+			user_deleted_date = #{deletedDate}
+			
+		where user_id = #{userId}	
+	</delete>
+	
+	<select id="getAllusers" resultType="com.toeic.speaking.vo.User">
+		select
+			USER_ID				as			userId,
+			USER_NAME			as			userName,
+			USER_ENG_FIRSTNAME	as			firstName,
+			USER_ENG_LASTNAME	as			lastName,
+			USER_PWD			as			password,
+			USER_BIRTH			as			birth,
+			USER_EMAIL			as			email,
+			USER_PHONE			as			phone,
+			USER_ADMIN			as			admin,
+			USER_GENDER			as			gender,
+			USER_FILE_NAME		as			fileName,
+			USER_STATUS			as			status,
+			USER_CREATED_DATE	as			createdDate,
+			USER_DELETED_DATE	as			deletedDate
+		from
+			TOEIC_SPEAKING_USERS
+	</select>
+	
+	<select id="getUserByUserId" parameterType="string" resultType="com.toeic.speaking.vo.User">
+		select
+			USER_ID				as			userId,
+			USER_NAME			as			userName,
+			USER_ENG_FIRSTNAME	as			firstName,
+			USER_ENG_LASTNAME	as			lastName,
+			USER_PWD			as			password,
+			USER_BIRTH			as			birth,
+			USER_EMAIL			as			email,
+			USER_PHONE			as			phone,
+			USER_ADMIN			as			admin,
+			USER_GENDER			as			gender,
+			USER_FILE_NAME		as			fileName,
+			USER_STATUS			as			status,
+			USER_CREATED_DATE	as			createdDate,
+			USER_DELETED_DATE	as			deletedDate
+		from
+			TOEIC_SPEAKING_USERS
+		where
+			USER_ID = #{value}
+	</select>
+	
+	<select id="getAllUsersMapWithPaging" parameterType="map" resultType="com.toeic.speaking.vo.User">
+		select
+			USER_ID				as			userId,
+			USER_NAME			as			userName,
+			USER_ENG_FIRSTNAME	as			firstName,
+			USER_ENG_LASTNAME	as			lastName,
+			USER_PWD			as			password,
+			USER_BIRTH			as			birth,
+			USER_EMAIL			as			email,
+			USER_PHONE			as			phone,
+			USER_ADMIN			as			admin,
+			USER_GENDER			as			gender,
+			USER_FILE_NAME		as			fileName,
+			USER_STATUS			as			status,
+			USER_CREATED_DATE	as			createdDate,
+			USER_DELETED_DATE	as			deletedDate
+		from(
+			select
+				row_number() over(order by user_id asc) pg,
+				USER_ID,USER_NAME,USER_ENG_FIRSTNAME,USER_ENG_LASTNAME,USER_PWD,USER_BIRTH,
+				USER_EMAIL,USER_PHONE,USER_ADMIN,USER_GENDER,USER_FILE_NAME,USER_STATUS,
+				USER_CREATED_DATE,USER_DELETED_DATE
+			from
+				TOEIC_SPEAKING_USERS
+				<choose>
+					<when test="opt != null and opt == 'name'">
+						where user_name like '%' || #{keyword} || '%'
+					</when>
+					<when test="opt != null and opt == 'id'">
+						where user_id like '%' || #{keyword} || '%'
+					</when>
+					<when test="opt != null and opt == 'phone'">
+						where user_phone like '%' || #{keyword} || '%'
+					</when>
+				</choose>
+		)
+		where
+			pg between #{beginIndex} and #{endIndex}
+	</select>
+	
+	<select id="getRowsCount" parameterType="map" resultType="int">
+		select
+			count(*)
+		from
+			TOEIC_SPEAKING_USERS
+			<choose>
+				<when test="opt != null and opt == 'name'">
+					where user_name like '%' || #{keyword} || '%'
+				</when>
+				<when test="opt != null and opt == 'id'">
+					where user_id like '%' || #{keyword} || '%'
+				</when>
+				<when test="opt != null and opt == 'phone'">
+					where user_phone like '%' || #{keyword} || '%'
+				</when>
+			</choose>		
+	</select>
+	
+	<select id="takesExamOneMonthAgo" resultType="int">
+		select 
+			count(*)
+		from 
+    		toeic_speaking_users 
+		where
+   			add_months(sysdate, -1) &lt; user_created_date
+		and
+    		user_takes_exam = 'Y'
+	</select>
+	
+	<select id="didntTakesExamOneMonthAgo" resultType="int">
+		select 
+			count(*)
+		from 
+    		toeic_speaking_users 
+		where
+   			add_months(sysdate, -1) &lt; user_created_date
+		and
+    		user_takes_exam = 'N'
+	</select>
+	
+	<select id="takesExamTwoMonthAgo" resultType="int">
+		select 
+			count(*)
+		from 
+   			toeic_speaking_users 
+		where
+			add_months(sysdate ,-2) &lt; user_created_date
+		and
+			add_months(sysdate ,-1) &gt; user_created_date
+		and
+    		user_takes_exam = 'Y'
+	</select>
+	
+	<select id="didnttakesExamTwoMonthAgo" resultType="int">
+		select 
+			count(*)
+		from 
+   			toeic_speaking_users 
+		where
+			add_months(sysdate ,-2) &lt; user_created_date
+		and
+			add_months(sysdate ,-1) &gt; user_created_date
+		and
+    		user_takes_exam = 'N'
+	</select>
+	
+	<select id="takesExamThreeMonthAgo" resultType="int">
+	select 
+		count(*)
+	from 
+    	toeic_speaking_users 
+	where
+    	add_months(sysdate ,-3) &lt; user_created_date
+	and
+    	add_months(sysdate, -2) &gt; user_created_Date
+	and
+    	user_takes_exam = 'Y'
+	</select>
+	
+	<select id="didnttakesExamThreeMonthAgo" resultType="int">
+	select 
+		count(*)
+	from 
+    	toeic_speaking_users 
+	where
+    	add_months(sysdate ,-3) &lt; user_created_date
+	and
+    	add_months(sysdate, -2) &gt; user_created_Date
+	and
+    	user_takes_exam = 'N'
+	</select>
+	
+</mapper>
