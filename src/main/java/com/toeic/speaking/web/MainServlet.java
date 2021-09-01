@@ -64,10 +64,7 @@ public class MainServlet extends HttpServlet {
 		  pagination.setEndPage(endPage);
 		  // 요청객체의  속성으로 Pagination객체를 저장하기
 		  req.setAttribute("pagination", pagination);   
-		
-		
-		
-		
+		  
 		req.getRequestDispatcher("/WEB-INF/views/index.jsp").forward(req, resp);
 	}
 }
