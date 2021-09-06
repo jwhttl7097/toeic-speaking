@@ -47,11 +47,10 @@
 
 |담당파트| 구현화면 |
 |:-------------:|:--------:|
-|회원가입</br>(약관동의)|![Toeic Speaking - 회원가입(약관동의)](https://user-images.githubusercontent.com/62005139/132189325-f0dbfe51-0f24-409f-8b92-5aad49f7a7e5.png)|
-|회원가입</br>(정보입력)|![Toeic Speaking - 회원가입(정보입력)](https://user-images.githubusercontent.com/62005139/132189367-f696cd13-7c06-4f6a-b283-8724d3536dbd.png)|
-|온라인</br>접수페이지|![Toeic Speaking - 온라인접수페이지](https://user-images.githubusercontent.com/62005139/132189302-edb15541-1054-4bbd-8cca-b9f75b687d6a.png)|
-|시험</br>접수</br>페이지</br>시험선택|![Toeic Speaking - 시험접수페이지(1-1)](https://user-images.githubusercontent.com/62005139/132189146-d92b4da3-1c44-4434-a798-9f480ac56c7a.PNG)|
-|시험</br>접수</br>페이지</br>규정동의|![Toeic Speaking - 시험접수페이지(1-2)](https://user-images.githubusercontent.com/62005139/132189196-89cfe582-1f24-4272-a585-89a5f6dbfca7.PNG)|
-|시험</br>접수</br>페이지</br>개인정보</br>확인|![Toeic Speaking - 시험접수페이지(2-1)](https://user-images.githubusercontent.com/62005139/132189230-e3855c55-be06-4e09-a7a1-1060bd1d85af.PNG)|
-|시험</br>접수</br>페이지</br>결제수단</br>및</br>결제하기|![Toeic Speaking - 시험접수페이지(2-2)](https://user-images.githubusercontent.com/62005139/132189273-6500c13e-73b9-4991-abc9-9924effb27d9.PNG)
-|
+|회원가입 (약관동의)|![Toeic Speaking - 회원가입(약관동의)](https://user-images.githubusercontent.com/62005139/132189325-f0dbfe51-0f24-409f-8b92-5aad49f7a7e5.png)|
+|회원가입 (정보입력)|![Toeic Speaking - 회원가입(정보입력)](https://user-images.githubusercontent.com/62005139/132189367-f696cd13-7c06-4f6a-b283-8724d3536dbd.png)|
+|온라인 접수페이지|![Toeic Speaking - 온라인접수페이지](https://user-images.githubusercontent.com/62005139/132189302-edb15541-1054-4bbd-8cca-b9f75b687d6a.png)|
+|시험 접수 페이지 시험선택|![Toeic Speaking - 시험접수페이지(1-1)](https://user-images.githubusercontent.com/62005139/132189146-d92b4da3-1c44-4434-a798-9f480ac56c7a.PNG)|
+|시험 접수 페이지 규정동의|![Toeic Speaking - 시험접수페이지(1-2)](https://user-images.githubusercontent.com/62005139/132189196-89cfe582-1f24-4272-a585-89a5f6dbfca7.PNG)|
+|시험 접수 페이지 개인정보 확인|![Toeic Speaking - 시험접수페이지(2-1)](https://user-images.githubusercontent.com/62005139/132189230-e3855c55-be06-4e09-a7a1-1060bd1d85af.PNG)|
+|시험 접수 페이지 결제하기|![Toeic Speaking - 시험접수페이지(2-2)](https://user-images.githubusercontent.com/62005139/132189273-6500c13e-73b9-4991-abc9-9924effb27d9.PNG)|
